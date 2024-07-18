@@ -39,6 +39,94 @@ namespace CSC295HW3
         }
     }
 
+    // Main program class
+    public class Program
+    {
+        // Main method where program execution begins
+        static void Main(string[] args)
+        {
+            // List of students with initial data
+            List<Student> students = new List<Student>
+            {
+                new Student("Alice", 3.5),
+                new Student("Bob", 3.2),
+                new Student("Charlie", 3.8),
+                new Student("Jame", 3.5),
+                new Student("Jack", 3.2),
+                new Student("Jill", 3.0),
+                // Uncomment the line below to see how exception is handled for invalid GPA
+                // new Student("Sam", 4.9) // This will throw an ArgumentOutOfRangeException
+            };
+
+            // Infinite loop for user interaction
+            while (true)
+            {
+                // Display menu options
+                Console.WriteLine("Select a sorting algorithm:");
+                Console.WriteLine("1. Bubble Sort by Name");
+                Console.WriteLine("2. Selection Sort by GPA (Ascending)");
+                Console.WriteLine("3. Selection Sort by GPA (Descending)");
+                Console.WriteLine("4. Exit");
+
+                // Read user input
+                int choice;
+                if (int.TryParse(Console.ReadLine(), out choice))
+                {
+                    try
+                    {
+                        // Perform action based on user choice
+                        switch (choice)
+                        {
+                            case 1:
+                                SortingAlgorithms.BubbleSortByName(students); // Sort students by name
+                                Console.WriteLine("Students sorted by name:");
+                                PrintStudents(students); // Print sorted students
+                                break;
+
+                            case 2:
+                                SortingAlgorithms.SelectionSortByGPAAscending(students); // Sort students by GPA ascending
+                                Console.WriteLine("Students sorted by GPA (ascending):");
+                                PrintStudents(students); // Print sorted students
+                                break;
+
+                            case 3:
+                                SortingAlgorithms.SelectionSortByGPADescending(students); // Sort students by GPA descending
+                                Console.WriteLine("Students sorted by GPA (descending):");
+                                PrintStudents(students); // Print sorted students
+                                break;
+
+                            case 4:
+                                Console.WriteLine("Exiting..."); // Exit the program
+                                return;
+
+                            default:
+                                Console.WriteLine("Invalid choice. Please try again."); // Handle invalid input
+                                break;
+                        }
+                    }
+                    catch (ArgumentOutOfRangeException ex)
+                    {
+                        Console.WriteLine(ex.Message); // Handle GPA validation exception
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter a number."); // Handle non-integer input
+                    Console.ReadLine(); // Clear the input buffer
+                }
+            }
+        }
+
+        // Method to print list of students
+        private static void PrintStudents(List<Student> students)
+        {
+            foreach (var student in students)
+            {
+                Console.WriteLine(student); // Output student information
+            }
+        }
+    }
+
     // Static class containing sorting algorithms for Student objects
     public static class SortingAlgorithms
     {
@@ -71,7 +159,7 @@ namespace CSC295HW3
         }
 
         // Selection sort algorithm to sort students by GPA (ascending)
-        public static void SelectionSortByGPA(List<Student> students)
+        public static void SelectionSortByGPAAscending(List<Student> students)
         {
             int n = students.Count;
             for (int i = 0; i < n - 1; i++)
@@ -96,85 +184,31 @@ namespace CSC295HW3
                 students[i] = temp;
             }
         }
-    }
 
-    // Main program class
-    public class Program
-    {
-        // Main method where program execution begins
-        static void Main(string[] args)
+        // Selection sort algorithm to sort students by GPA (descending)
+        public static void SelectionSortByGPADescending(List<Student> students)
         {
-            // List of students with initial data
-            List<Student> students = new List<Student>
+            int n = students.Count;
+            for (int i = 0; i < n - 1; i++)
             {
-                new Student("Alice", 3.5),
-                new Student("Bob", 3.2),
-                new Student("Charlie", 3.8),
-                new Student("Jame", 3.5),
-                new Student("Jack", 3.2),
-                new Student("Jill", 3.0),
-                // Uncomment the line below to see how exception is handled for invalid GPA
-                // new Student("Sam", 4.9) // This will throw an ArgumentOutOfRangeException
-            };
-
-            // Infinite loop for user interaction
-            while (true)
-            {
-                // Display menu options
-                Console.WriteLine("Select a sorting algorithm:");
-                Console.WriteLine("1. Bubble Sort by Name");
-                Console.WriteLine("2. Selection Sort by GPA");
-                Console.WriteLine("3. Exit");
-
-                // Read user input
-                int choice;
-                if (int.TryParse(Console.ReadLine(), out choice))
+                int maxIndex = i;
+                for (int j = i + 1; j < n; j++)
                 {
-                    try
+                    // Compare GPAs of students
+                    if (students[j].GPA > students[maxIndex].GPA)
                     {
-                        // Perform action based on user choice
-                        switch (choice)
-                        {
-                            case 1:
-                                SortingAlgorithms.BubbleSortByName(students); // Sort students by name
-                                Console.WriteLine("Students sorted by name:");
-                                PrintStudents(students); // Print sorted students
-                                break;
-
-                            case 2:
-                                SortingAlgorithms.SelectionSortByGPA(students); // Sort students by GPA
-                                Console.WriteLine("Students sorted by GPA:");
-                                PrintStudents(students); // Print sorted students
-                                break;
-
-                            case 3:
-                                Console.WriteLine("Exiting..."); // Exit the program
-                                return;
-
-                            default:
-                                Console.WriteLine("Invalid choice. Please try again."); // Handle invalid input
-                                break;
-                        }
+                        maxIndex = j; // Update maximum index if larger GPA found
                     }
-                    catch (ArgumentOutOfRangeException ex)
+                    // Secondary sort by name if GPAs are equal
+                    else if (students[j].GPA == students[maxIndex].GPA && students[j].Name.CompareTo(students[maxIndex].Name) > 0)
                     {
-                        Console.WriteLine(ex.Message); // Handle GPA validation exception
+                        maxIndex = j; // Update maximum index if alphabetical order by name needed
                     }
                 }
-                else
-                {
-                    Console.WriteLine("Invalid input. Please enter a number."); // Handle non-integer input
-                    Console.ReadLine(); // Clear the input buffer
-                }
-            }
-        }
-
-        // Method to print list of students
-        private static void PrintStudents(List<Student> students)
-        {
-            foreach (var student in students)
-            {
-                Console.WriteLine(student); // Output student information
+                // Swap current maximum with current position
+                var temp = students[maxIndex];
+                students[maxIndex] = students[i];
+                students[i] = temp;
             }
         }
     }
