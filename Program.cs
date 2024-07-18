@@ -62,11 +62,13 @@ namespace CSC295HW3
             while (true)
             {
                 // Display menu options
+                Console.WriteLine();    // Added a line to separate the first output and the menu
                 Console.WriteLine("Select a sorting algorithm:");
-                Console.WriteLine("1. Bubble Sort by Name");
-                Console.WriteLine("2. Selection Sort by GPA (Ascending)");
-                Console.WriteLine("3. Selection Sort by GPA (Descending)");
-                Console.WriteLine("4. Exit");
+                Console.WriteLine("1. Bubble Sort by GPA (Descending)");
+                Console.WriteLine("2. Selection Sort by GPA (Descending)");
+                Console.WriteLine("3. Insertion Sort by GPA (Descending)");
+                Console.WriteLine("4. Merge Sort by GPA (Descending)");
+                Console.WriteLine("5. Exit");
 
                 // Read user input
                 int choice;
@@ -78,24 +80,30 @@ namespace CSC295HW3
                         switch (choice)
                         {
                             case 1:
-                                SortingAlgorithms.BubbleSortByName(students); // Sort students by name
-                                Console.WriteLine("Students sorted by name:");
+                                SortingAlgorithms.BubbleSortByGPADescending(students); // Sort students by GPA descending using Bubble Sort
+                                Console.WriteLine("Students sorted by GPA (descending) using Bubble Sort:");
                                 PrintStudents(students); // Print sorted students
                                 break;
 
                             case 2:
-                                SortingAlgorithms.SelectionSortByGPAAscending(students); // Sort students by GPA ascending
-                                Console.WriteLine("Students sorted by GPA (ascending):");
+                                SortingAlgorithms.SelectionSortByGPADescending(students); // Sort students by GPA descending using Selection Sort
+                                Console.WriteLine("Students sorted by GPA (descending) using Selection Sort:");
                                 PrintStudents(students); // Print sorted students
                                 break;
 
                             case 3:
-                                SortingAlgorithms.SelectionSortByGPADescending(students); // Sort students by GPA descending
-                                Console.WriteLine("Students sorted by GPA (descending):");
+                                SortingAlgorithms.InsertionSortByGPADescending(students); // Sort students by GPA descending using Insertion Sort
+                                Console.WriteLine("Students sorted by GPA (descending) using Insertion Sort:");
                                 PrintStudents(students); // Print sorted students
                                 break;
 
                             case 4:
+                                SortingAlgorithms.MergeSortByGPADescending(students); // Sort students by GPA descending using Merge Sort
+                                Console.WriteLine("Students sorted by GPA (descending) using Merge Sort:");
+                                PrintStudents(students); // Print sorted students
+                                break;
+
+                            case 5:
                                 Console.WriteLine("Exiting..."); // Exit the program
                                 return;
 
@@ -130,62 +138,34 @@ namespace CSC295HW3
     // Static class containing sorting algorithms for Student objects
     public static class SortingAlgorithms
     {
-        // Bubble sort algorithm to sort students by name (ascending)
-        public static void BubbleSortByName(List<Student> students)
+        // Bubble sort algorithm to sort students by GPA (descending), name (ascending)
+        public static void BubbleSortByGPADescending(List<Student> students)
         {
             int n = students.Count;
             for (int i = 0; i < n - 1; i++)
             {
                 for (int j = 0; j < n - i - 1; j++)
                 {
-                    // Compare names of adjacent students
-                    if (students[j].Name.CompareTo(students[j + 1].Name) > 0)
-                    {
-                        // Swap students if out of order by name
-                        var temp = students[j];
-                        students[j] = students[j + 1];
-                        students[j + 1] = temp;
-                    }
-                    // Secondary sort by GPA if names are equal
-                    else if (students[j].Name.CompareTo(students[j + 1].Name) == 0 && students[j].GPA > students[j + 1].GPA)
+                    // Compare GPAs of adjacent students
+                    if (students[j].GPA < students[j + 1].GPA)
                     {
                         // Swap students if out of order by GPA
-                        var temp = students[j];
-                        students[j] = students[j + 1];
-                        students[j + 1] = temp;
+                        Swap(students, j, j + 1);
+                    }
+                    else if (students[j].GPA == students[j + 1].GPA)
+                    {
+                        // If GPA is the same, compare names (ascending order)
+                        if (string.Compare(students[j].Name, students[j + 1].Name) > 0)
+                        {
+                            // Swap students if out of order alphabetically by name
+                            Swap(students, j, j + 1);
+                        }
                     }
                 }
             }
         }
 
-        // Selection sort algorithm to sort students by GPA (ascending)
-        public static void SelectionSortByGPAAscending(List<Student> students)
-        {
-            int n = students.Count;
-            for (int i = 0; i < n - 1; i++)
-            {
-                int minIndex = i;
-                for (int j = i + 1; j < n; j++)
-                {
-                    // Compare GPAs of students
-                    if (students[j].GPA < students[minIndex].GPA)
-                    {
-                        minIndex = j; // Update minimum index if smaller GPA found
-                    }
-                    // Secondary sort by name if GPAs are equal
-                    else if (students[j].GPA == students[minIndex].GPA && students[j].Name.CompareTo(students[minIndex].Name) < 0)
-                    {
-                        minIndex = j; // Update minimum index if alphabetical order by name needed
-                    }
-                }
-                // Swap current minimum with current position
-                var temp = students[minIndex];
-                students[minIndex] = students[i];
-                students[i] = temp;
-            }
-        }
-
-        // Selection sort algorithm to sort students by GPA (descending)
+        // Selection sort algorithm to sort students by GPA (descending), name (ascending)
         public static void SelectionSortByGPADescending(List<Student> students)
         {
             int n = students.Count;
@@ -199,17 +179,122 @@ namespace CSC295HW3
                     {
                         maxIndex = j; // Update maximum index if larger GPA found
                     }
-                    // Secondary sort by name if GPAs are equal
-                    else if (students[j].GPA == students[maxIndex].GPA && students[j].Name.CompareTo(students[maxIndex].Name) > 0)
+                    else if (students[j].GPA == students[maxIndex].GPA)
                     {
-                        maxIndex = j; // Update maximum index if alphabetical order by name needed
+                        // If GPA is the same, compare names (ascending order)
+                        if (string.Compare(students[j].Name, students[maxIndex].Name) < 0)
+                        {
+                            maxIndex = j; // Update maximum index if alphabetical order by name needed
+                        }
                     }
                 }
                 // Swap current maximum with current position
-                var temp = students[maxIndex];
-                students[maxIndex] = students[i];
-                students[i] = temp;
+                Swap(students, maxIndex, i);
             }
+        }
+
+        // Insertion sort algorithm to sort students by GPA (descending), name (ascending)
+        public static void InsertionSortByGPADescending(List<Student> students)
+        {
+            int n = students.Count;
+            for (int i = 1; i < n; ++i)
+            {
+                Student key = students[i];
+                int j = i - 1;
+
+                // Move elements of students[0..i-1], that are greater than key, to one position ahead of their current position
+                while (j >= 0 && students[j].GPA < key.GPA)
+                {
+                    students[j + 1] = students[j];
+                    j = j - 1;
+                }
+                students[j + 1] = key;
+            }
+        }
+
+        // Merge sort algorithm to sort students by GPA (descending), name (ascending)
+        public static void MergeSortByGPADescending(List<Student> students)
+        {
+            MergeSort(students, 0, students.Count - 1);
+        }
+
+        // Helper method for Merge Sort
+        private static void MergeSort(List<Student> students, int left, int right)
+        {
+            if (left < right)
+            {
+                int middle = (left + right) / 2;
+
+                // Sort first and second halves
+                MergeSort(students, left, middle);
+                MergeSort(students, middle + 1, right);
+
+                // Merge the sorted halves
+                Merge(students, left, middle, right);
+            }
+        }
+
+        // Helper method to merge two halves sorted by GPA
+        private static void Merge(List<Student> students, int left, int middle, int right)
+        {
+            int n1 = middle - left + 1;
+            int n2 = right - middle;
+
+            // Create temporary arrays
+            List<Student> LeftArray = new List<Student>();
+            List<Student> RightArray = new List<Student>();
+
+            // Copy data to temporary arrays
+            for (int i = 0; i < n1; ++i)
+                LeftArray.Add(students[left + i]);
+            for (int j = 0; j < n2; ++j)
+                RightArray.Add(students[middle + 1 + j]);
+
+            // Merge the temporary arrays
+
+            // Initial indexes of first and second subarrays
+            int iL = 0, iR = 0;
+
+            // Initial index of merged subarray array
+            int k = left;
+            while (iL < n1 && iR < n2)
+            {
+                if (LeftArray[iL].GPA >= RightArray[iR].GPA)
+                {
+                    students[k] = LeftArray[iL];
+                    iL++;
+                }
+                else
+                {
+                    students[k] = RightArray[iR];
+                    iR++;
+                }
+                k++;
+            }
+
+            // Copy remaining elements of LeftArray if any
+            while (iL < n1)
+            {
+                students[k] = LeftArray[iL];
+                iL++;
+                k++;
+            }
+
+            // Copy remaining elements of RightArray if any
+            while (iR < n2)
+            {
+                students[k] = RightArray[iR];
+                iR++;
+                k++;
+            }
+        }
+
+        // Helper method to swap two students in a list
+        private static void Swap(List<Student> students, int i, int j)
+        {
+            var temp = students[i];
+            students[i] = students[j];
+            students[j] = temp;
         }
     }
 }
