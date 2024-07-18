@@ -150,7 +150,9 @@ namespace CSC295HW3
                     if (students[j].GPA < students[j + 1].GPA)
                     {
                         // Swap students if out of order by GPA
-                        Swap(students, j, j + 1);
+                        var temp = students[j];
+                        students[j] = students[j + 1];
+                        students[j + 1] = temp;
                     }
                     else if (students[j].GPA == students[j + 1].GPA)
                     {
@@ -158,7 +160,9 @@ namespace CSC295HW3
                         if (string.Compare(students[j].Name, students[j + 1].Name) > 0)
                         {
                             // Swap students if out of order alphabetically by name
-                            Swap(students, j, j + 1);
+                            var temp = students[j];
+                            students[j] = students[j + 1];
+                            students[j + 1] = temp;
                         }
                     }
                 }
@@ -189,7 +193,9 @@ namespace CSC295HW3
                     }
                 }
                 // Swap current maximum with current position
-                Swap(students, maxIndex, i);
+                var temp = students[maxIndex];
+                students[maxIndex] = students[i];
+                students[i] = temp;
             }
         }
 
@@ -287,14 +293,6 @@ namespace CSC295HW3
                 iR++;
                 k++;
             }
-        }
-
-        // Helper method to swap two students in a list
-        private static void Swap(List<Student> students, int i, int j)
-        {
-            var temp = students[i];
-            students[i] = students[j];
-            students[j] = temp;
         }
     }
 }
